@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 np.random.seed(42)
 
 input_size = 1
-hidden_size = 3
+hidden_size = 10
 output_size = 1
+beta = 1.25
 
 # Inicjalizacja wag
 weights_input_hidden = np.random.rand(input_size, hidden_size)
@@ -19,7 +20,7 @@ bias_output = np.zeros((1, output_size))
 
 # Funkcja aktywacji - sigmoid
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    return 1 / (1 + np.exp(-beta*x))
 
 
 # Funkcja kosztu - Mean Squared Error
@@ -64,14 +65,14 @@ def backward_propagation(inputs, targets, hidden_output, final_output):
 
 
 # Funkcja treningowa
-def train_neural_network(inputs, targets, epochs=1000, learning_rate=0.1):
+def train_neural_network(inputs, targets, epochs=1000000, alpha=0.1):
     for epoch in range(epochs):
         hidden_output, final_output = forward_propagation(inputs)
         cost = mean_squared_error(final_output, targets)
 
         backward_propagation(inputs, targets, hidden_output, final_output)
 
-        if epoch % 100 == 0:
+        if epoch % 10000 == 0:
             print(f"Epoch {epoch}, Cost: {cost}")
 
     print("Training complete!")
@@ -81,11 +82,11 @@ def train_neural_network(inputs, targets, epochs=1000, learning_rate=0.1):
 # Przygotowanie danych treningowych
 inputs = np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8], [9]])
 targets = np.array([[1.0], [1.32], [1.6], [1.41], [1.01], [0.6], [0.42], [0.2], [0.51], [0.8]])
-
+targets = targets/10
 # Uruchomienie treningu
-trained_weights_input_hidden, trained_bias_hidden, trained_weights_hidden_output, trained_bias_output = train_neural_network(
-    inputs, targets)
-print(trained_weights_hidden_output)
+trained_weights_input_hidden, trained_bias_hidden, trained_weights_hidden_output, trained_bias_output \
+    = train_neural_network(inputs, targets)
+
 
 # Generowanie nowych danych testowych
 new_inputs = np.linspace(0, 10, 100).reshape(-1, 1)
@@ -93,8 +94,8 @@ new_inputs = np.linspace(0, 10, 100).reshape(-1, 1)
 # Przewidywanie na nowych danych
 _, predictions = forward_propagation(new_inputs)
 
-plt.scatter(new_inputs, predictions, label='Przewidywane wyniki')
-plt.scatter(inputs, targets, label='x')
+plt.scatter(new_inputs, predictions*10, label='Przewidywane wyniki')
+plt.scatter(inputs, targets*10, label='x')
 plt.xlabel('Nowe dane testowe')
 plt.ylabel('Przewidywane wyniki')
 plt.title('Przewidywane wyniki na nowych danych testowych')
